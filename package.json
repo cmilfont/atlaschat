@@ -1,0 +1,22 @@
+{
+  name: "atlaschat",
+  version: "0.0.1",
+  description: "Chat do Atlas",
+  main: "./server.js",
+  keywords: ["chat"],
+  repository: {
+    type: "git",
+    url: "http://github.com/cmilfont/atlaschat.git"
+  },
+  dependencies: {
+    dnode: "1.0.5"
+  },
+  engine: {
+   node: ">=0.6.0"
+  },
+  author: {
+    name: "cmilfont",
+    email: "cmilfont@milfont.org",
+    url: "http://milfont.org"
+  }
+}
