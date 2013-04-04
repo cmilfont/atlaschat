@@ -1,8 +1,7 @@
 var shoe = require('shoe');
 var dnode = require('dnode');
 var express = require('express');
-var chat = require(__dirname + '/lib/chat')
-var app = express()
+var app = express();
 var redis = require("redis").createClient();
 
 app.configure(function() {
@@ -18,30 +17,31 @@ app.configure(function() {
     dumpExceptions: true
   , showStack: true 
   }))
-})
-
-app.get('/', function(req, res){
-  res.send('hello world');
 });
 
-app.get('/cliente', function(req, res){
-  res.render('cliente.html', {
+app.get('/contato', function(req, res){
+  res.render('contato.html', {
     title: "Chat Fortes"
   });
 });
 
+app.get('/atendente', function(req, res){
+  res.render('atendente.html', {
+    title: "Chat Fortes"
+  });
+});
 
-var clientes = [];
-
-var atendente = require(__dirname + '/lib/atendente');
+var servidor = require(__dirname + '/lib/servidor');
+var filaDeEspera = require(__dirname + '/lib/filaDeEspera')(redis);
+var grupoDeAtendentes = require(__dirname + '/lib/grupoDeAtendentes')(redis);
 
 var sock = shoe(function (stream) {
     
-    var d = dnode( atendente(clientes) );
+    var d = dnode( servidor(filaDeEspera, grupoDeAtendentes) );
     
     d.on('remote', function (remote) {
-      
-      clientes.push(remote);
+      grupoDeAtendentes.add(remote);
+      //sala.push(remote);
       console.log("REmote", remote);
     });
     
@@ -52,14 +52,8 @@ sock.install(app.listen(9999, function() {
 }), '/dnode');
 
 /*
-
 var redis = require("redis").createClient(); 
-
 redis.set("00201300", "teste"); 
-
 redis.set("00201301", "teste 2"); 
-
 redis.set("00201351", "teste 3")
-
-
 */

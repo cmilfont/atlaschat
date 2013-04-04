@@ -12,5 +12,5 @@
         "domready"   : "~0.2.11",
         "browserify" : "~1.12.3"
     }
-   , "engines" : { "node" : ">=v0.6.0" }
+   , "engines" : { "node" : "=v0.10.1" }
 }
