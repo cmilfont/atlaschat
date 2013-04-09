@@ -5,54 +5,83 @@ var dnode = require('dnode');
 var servidor;
 
 domready(function () {
-    var tramite_id = Math.floor(Math.random() * 10 );
-    var result = document.getElementById('chat');
-    var stream = shoe('/dnode');
+  
+  function atender() {
+
+    var fila_id = $(this).data("id");
+    var organizacao_id = $(this).data("organizacao_id");
+    servidor.atender(organizacao_id, fila_id, function(mensagem) {
+      $("#fila").hide();
+      $("#atendimento").show();
+      console.log("Veio do server", mensagem);
+    });
     
-    var atendente = {
+  };
+  
+  function addClienteNaFila(fila) {
+    console.log("Fila", fila);
+    var $link = $("<a>");
+    $link.attr("href", "#");
+    $link.attr("data-id", fila.id);
+    $link.attr("data-organizacao_id", fila.organizacao_id);
+    $link.html(fila.tramite.contato.nome);
+    console.log($link);
+    $("#fila").append( $link );
+    $("#fila").append("<br/>");
+    $link.on("click", atender);
+  };
+  
+  function removerContatoNaFila(fila) {
+    $("a[data-id='"+fila.id+"']").remove()
+  };
+  
+  function conectar(atendente) {
+     var stream = shoe('/dnode');
+     var d = dnode({});
+     d.on('remote', function (remote) {
+       servidor = remote;
+       servidor.entrarEmAtendimento(atendente, function() {
+         servidor.mostrarFila(atendente.organizacao_id, function(lista){
+           lista.forEach(function(fila){
+             addClienteNaFila(fila);
+           });
+         });
+       });
+     });
+     d.pipe(stream).pipe(d); 
+  }
+  
+  
+  $("#butao_login").on('click', function(){
+    
+    $("#login").hide();
+    
+    conectar({
       tipo: "Atendente",
-      organizacao_id: 1,
-      atendente_id: 20,
-      tramite_id: tramite_id + 1,
+      organizacao_id: $("#organizacao_id").val(),
+      atendente_id: $("#atendente_id").val(),
+      tramite_id: Math.floor(Math.random() * 10 ) + 1,
       receber: function(mensagem) {
         $("#chat").append("<br/>").append(mensagem);
       },
       atualizar: function(fila) {
-        $("#chat").append(  fila.tramite.contato.nome  );
-      }
-    }
-    
-    var d = dnode({});
-    
-    
-    d.on('remote', function (remote) {
-      servidor = remote;
-      
-      servidor.entrarEmAtendimento(atendente, function() {
-        
-        servidor.mostrarFila(atendente.organizacao_id, function(lista){
-          lista.forEach(function(fila){
-            $("#chat").append(  fila.tramite.contato.nome  );
-          });
-        });
-        
-      });
-      
-      
+        addClienteNaFila(fila);
+      },
+      removerContatoNaFila: removerContatoNaFila
     });
     
-    
-    $("#butao").on('click', function(){
-      servidor.conversar({
-        tipo: "Atendente",
-        tramite_id: 100,
-        user_id: 156,
-        msg: $("#conversa").val()
-      })
-      
-    });
-    
-    d.pipe(stream).pipe(d);
+  });
+  
+  $("#butao").on('click', function(){
+    servidor.conversar({
+      tipo: "Atendente",
+      tramite_id: 100,
+      user_id: 156,
+      msg: $("#conversa").val()
+    })
+  });
+  
+ 
 });
 },{"domready":2,"shoe":3,"dnode":4}],2:[function(require,module,exports){
 /*!
@@ -3383,7 +3412,11 @@ dnode.prototype.destroy = function () {
 };
 
 })(require("__browserify_process"))
-},{"stream":5,"dnode-protocol":11,"jsonify":12,"__browserify_process":8}],11:[function(require,module,exports){
+},{"stream":5,"dnode-protocol":11,"jsonify":12,"__browserify_process":8}],12:[function(require,module,exports){
+exports.parse = require('./lib/parse');
+exports.stringify = require('./lib/stringify');
+
+},{"./lib/parse":13,"./lib/stringify":14}],11:[function(require,module,exports){
 var EventEmitter = require('events').EventEmitter;
 var scrubber = require('./lib/scrub');
 var objectKeys = require('./lib/keys');
@@ -3510,26 +3543,7 @@ Proto.prototype.apply = function (f, args) {
     catch (err) { this.emit('error', err) }
 };
 
-},{"events":6,"./lib/scrub":13,"./lib/keys":14,"./lib/foreach":15,"./lib/is_enum":16}],12:[function(require,module,exports){
-exports.parse = require('./lib/parse');
-exports.stringify = require('./lib/stringify');
-
-},{"./lib/parse":17,"./lib/stringify":18}],14:[function(require,module,exports){
-module.exports = Object.keys || function (obj) {
-    var keys = [];
-    for (var key in obj) keys.push(key);
-    return keys;
-};
-
-},{}],15:[function(require,module,exports){
-module.exports = function forEach (xs, f) {
-    if (xs.forEach) return xs.forEach(f)
-    for (var i = 0; i < xs.length; i++) {
-        f.call(xs, xs[i], i);
-    }
-}
-
-},{}],17:[function(require,module,exports){
+},{"events":6,"./lib/scrub":15,"./lib/keys":16,"./lib/foreach":17,"./lib/is_enum":18}],13:[function(require,module,exports){
 var at, // The index of the current character
     ch, // The current character
     escapee = {
@@ -3804,7 +3818,7 @@ module.exports = function (source, reviver) {
     }({'': result}, '')) : result;
 };
 
-},{}],18:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 var cx = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
     escapable = /[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
     gap,
@@ -3961,6 +3975,21 @@ module.exports = function (value, replacer, space) {
 };
 
 },{}],16:[function(require,module,exports){
+module.exports = Object.keys || function (obj) {
+    var keys = [];
+    for (var key in obj) keys.push(key);
+    return keys;
+};
+
+},{}],17:[function(require,module,exports){
+module.exports = function forEach (xs, f) {
+    if (xs.forEach) return xs.forEach(f)
+    for (var i = 0; i < xs.length; i++) {
+        f.call(xs, xs[i], i);
+    }
+}
+
+},{}],18:[function(require,module,exports){
 var objectKeys = require('./keys');
 
 module.exports = function (obj, key) {
@@ -3974,7 +4003,7 @@ module.exports = function (obj, key) {
     return false;
 };
 
-},{"./keys":14}],13:[function(require,module,exports){
+},{"./keys":16}],15:[function(require,module,exports){
 var traverse = require('traverse');
 var objectKeys = require('./keys');
 var forEach = require('./foreach');
@@ -4048,7 +4077,7 @@ Scrubber.prototype.unscrub = function (msg, f) {
     return args;
 };
 
-},{"./keys":14,"./foreach":15,"traverse":19}],19:[function(require,module,exports){
+},{"./keys":16,"./foreach":17,"traverse":19}],19:[function(require,module,exports){
 var traverse = module.exports = function (obj) {
     return new Traverse(obj);
 };

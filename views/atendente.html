@@ -7,13 +7,31 @@
 
   <body>
     
-    <h1>Atendente</h1>
-    
-    <div id="chat">
-      
+    <div id="login">
+      <label for="organizacao_id">Organização</label>
+      <select id="organizacao_id">
+        <option value="1">Fortes</option>
+        <option value="2">Guanabara</option>
+      </select>
+      <br/>
+      <label for="atendente_id">Atendente</label>
+      <select id="atendente_id">
+        <option value="1">Ricardo</option>
+        <option value="2">Katia</option>
+      </select>
+      <input type="button" id="butao_login" value="Enviar" />
     </div>
-    <textarea id="conversa"></textarea>
-    <input type="button" id="butao" value="Enviar" />
+    
+    <div id="fila">
+    </div>
+    
+    <div id="atendimento" style="display:none;">
+      <h1>Atendente</h1>
+      <div id="chat"></div>
+      <textarea id="conversa"></textarea>
+      <input type="button" id="butao" value="Enviar" />      
+    </div>
+    
   
   <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
   <script src="atendente.js"></script>

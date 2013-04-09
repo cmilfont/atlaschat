@@ -13,13 +13,16 @@ domready(function () {
       servidor = remote;
       
       servidor.entrarNaFila({
-        id: Math.floor(Math.random() * 10 ),
+        id: Math.floor(Math.random() * 1000 ) + 1,
         tramite_id: tramite_id,
         organizacao_id: 1,
         tramite: {
           contato: {
             nome: "Zé com acento"
           }
+        },
+        iniciarAtendimento: function(chat_id) {
+          console.log("Fui atendido no chat", chat_id);
         },
         receber: function(mensagem) {
           $("#chat").append("<br/>").append(mensagem);
@@ -43,7 +46,7 @@ domready(function () {
     
     d.pipe(stream).pipe(d);
 });
-},{"domready":2,"dnode":3,"shoe":4}],2:[function(require,module,exports){
+},{"domready":2,"shoe":3,"dnode":4}],2:[function(require,module,exports){
 /*!
   * domready (c) Dustin Diaz 2012 - License MIT
   */
@@ -812,7 +815,7 @@ exports.format = function(f) {
   return str;
 };
 
-},{"events":6}],4:[function(require,module,exports){
+},{"events":6}],3:[function(require,module,exports){
 var Stream = require('stream');
 var sockjs = require('sockjs-client');
 
@@ -3209,7 +3212,7 @@ if (typeof module === 'object' && module && module.exports) {
 
 
 })()
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 var dnode = require('./lib/dnode');
 
 module.exports = function (cons, opts) {
