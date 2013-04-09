@@ -34,9 +34,10 @@ app.get('/atendente', function(req, res){
 var servidor = require(__dirname + '/lib/servidor');
 var filaDeEspera = require(__dirname + '/lib/filaDeEspera')();
 var grupoDeAtendentes = require(__dirname + '/lib/grupoDeAtendentes')();
+var grupoDeChats = require(__dirname + '/lib/grupoDeChats')();
 
 var sock = shoe(function (stream) {
-    var d = dnode( servidor(filaDeEspera, grupoDeAtendentes) );    
+    var d = dnode( servidor(filaDeEspera, grupoDeAtendentes, grupoDeChats) );    
     d.on('remote', function (remote) {} );
     d.pipe(stream).pipe(d);
 });

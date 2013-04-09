@@ -3,6 +3,7 @@ var domready = require('domready');
 var shoe = require('shoe');
 var dnode = require('dnode');
 var servidor;
+var chat;
 
 domready(function () {
 	
@@ -31,6 +32,7 @@ domready(function () {
             nome: $("#nome").val()
           }
         },
+<<<<<<< HEAD
         iniciarAtendimento: function(chat_id) {
           console.log("Fui atendido no chat", chat_id);
 					$("#chat").hide();
@@ -43,6 +45,29 @@ domready(function () {
       }, function(msg) {
 				$("#chat").prepend(msg);
       })
+=======
+        iniciarAtendimento: function(c) {
+          console.log("Fui atendido no chat", c.id);
+          chat = c;
+          $("#atendimento").show();
+        },
+        receber: function(mensagem) {
+          $("#chat_div").append("<br/>").append(mensagem);
+        },
+        created_at: new Date
+      }, function(msg) {
+        //$("#chat").prepend( $("div").html(msg) )
+      })
+      
+    });
+    
+    $("#butao").on('click', function(){
+      servidor.conversar({
+        tipo: "Contato",
+        chat: chat,
+        msg: $("#conversa").val()
+      });
+>>>>>>> Conversas rolando, agora é partir pra fazer
     });
 
       // 

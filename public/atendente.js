@@ -2,22 +2,27 @@
 var domready = require('domready');
 var shoe = require('shoe');
 var dnode = require('dnode');
-var servidor;
 
 domready(function () {
   
+  var servidor;
+  var chat;
+  var atendente;
+
   function atender() {
 
+    
     var fila_id = $(this).data("id");
     var organizacao_id = $(this).data("organizacao_id");
-    servidor.atender(organizacao_id, fila_id, function(mensagem) {
+    servidor.atender(organizacao_id, fila_id, atendente.atendente_id, function(c, mensagem) {
+      chat = c;
       $("#fila").hide();
       $("#atendimento").show();
       console.log("Veio do server", mensagem);
     });
-    
+
   };
-  
+
   function addClienteNaFila(fila) {
     console.log("Fila", fila);
     var $link = $("<a>");
@@ -30,12 +35,25 @@ domready(function () {
     $("#fila").append("<br/>");
     $link.on("click", atender);
   };
-  
-  function removerContatoNaFila(fila) {
-    $("a[data-id='"+fila.id+"']").remove()
-  };
-  
-  function conectar(atendente) {
+
+  function conectar() {
+    
+    atendente = {
+      tipo: "Atendente",
+      organizacao_id: $("#organizacao_id").val(),
+      atendente_id: $("#atendente_id").val(),
+      tramite_id: Math.floor(Math.random() * 10 ) + 1,
+      receber: function(mensagem) {
+        $("#chat_div").append("<br/>").append(mensagem);
+      },
+      atualizar: function(fila) {
+        addClienteNaFila(fila);
+      },
+      removerContatoNaFila: function(fila) {
+        $("a[data-id='"+fila.id+"']").remove()
+      }
+    };
+    
      var stream = shoe('/dnode');
      var d = dnode({});
      d.on('remote', function (remote) {
@@ -53,30 +71,14 @@ domready(function () {
   
   
   $("#butao_login").on('click', function(){
-    
     $("#login").hide();
-    
-    conectar({
-      tipo: "Atendente",
-      organizacao_id: $("#organizacao_id").val(),
-      atendente_id: $("#atendente_id").val(),
-      tramite_id: Math.floor(Math.random() * 10 ) + 1,
-      receber: function(mensagem) {
-        $("#chat").append("<br/>").append(mensagem);
-      },
-      atualizar: function(fila) {
-        addClienteNaFila(fila);
-      },
-      removerContatoNaFila: removerContatoNaFila
-    });
-    
+    conectar();
   });
   
   $("#butao").on('click', function(){
     servidor.conversar({
       tipo: "Atendente",
-      tramite_id: 100,
-      user_id: 156,
+      chat: chat,
       msg: $("#conversa").val()
     })
   });
@@ -3412,7 +3414,11 @@ dnode.prototype.destroy = function () {
 };
 
 })(require("__browserify_process"))
+<<<<<<< HEAD
 },{"stream":5,"dnode-protocol":11,"jsonify":12,"__browserify_process":9}],11:[function(require,module,exports){
+=======
+},{"stream":5,"dnode-protocol":11,"jsonify":12,"__browserify_process":8}],11:[function(require,module,exports){
+>>>>>>> Conversas rolando, agora é partir pra fazer
 var EventEmitter = require('events').EventEmitter;
 var scrubber = require('./lib/scrub');
 var objectKeys = require('./lib/keys');
