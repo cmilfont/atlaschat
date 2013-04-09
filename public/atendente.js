@@ -1,4 +1,4 @@
-;(function(e,t,n){function i(n,s){if(!t[n]){if(!e[n]){var o=typeof require=="function"&&require;if(!s&&o)return o(n,!0);if(r)return r(n,!0);throw new Error("Cannot find module '"+n+"'")}var u=t[n]={exports:{}};e[n][0].call(u.exports,function(t){var r=e[n][1][t];return i(r?r:t)},u,u.exports)}return t[n].exports}var r=typeof require=="function"&&require;for(var s=0;s<n.length;s++)i(n[s]);return i})({1:[function(require,module,exports){
+;(function(e,t,n){function r(n,i){if(!t[n]){if(!e[n]){var s=typeof require=="function"&&require;if(!i&&s)return s(n,!0);throw new Error("Cannot find module '"+n+"'")}var o=t[n]={exports:{}};e[n][0](function(t){var i=e[n][1][t];return r(i?i:t)},o,o.exports)}return t[n].exports}for(var i=0;i<n.length;i++)r(n[i]);return r})({1:[function(require,module,exports){
 var domready = require('domready');
 var shoe = require('shoe');
 var dnode = require('dnode');
@@ -10,7 +10,6 @@ domready(function () {
   var atendente;
 
   function atender() {
-
     
     var fila_id = $(this).data("id");
     var organizacao_id = $(this).data("organizacao_id");
@@ -18,19 +17,17 @@ domready(function () {
       chat = c;
       $("#fila").hide();
       $("#atendimento").show();
-      console.log("Veio do server", mensagem);
     });
 
   };
 
   function addClienteNaFila(fila) {
-    console.log("Fila", fila);
+
     var $link = $("<a>");
     $link.attr("href", "#");
     $link.attr("data-id", fila.id);
     $link.attr("data-organizacao_id", fila.organizacao_id);
     $link.html(fila.tramite.contato.nome);
-    console.log($link);
     $("#fila").append( $link );
     $("#fila").append("<br/>");
     $link.on("click", atender);
@@ -261,14 +258,7 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":6,"util":7}],4:[function(require,module,exports){
-var dnode = require('./lib/dnode');
-
-module.exports = function (cons, opts) {
-    return new dnode(cons, opts);
-};
-
-},{"./lib/dnode":8}],9:[function(require,module,exports){
+},{"events":6,"util":7}],8:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -508,7 +498,7 @@ EventEmitter.prototype.listeners = function(type) {
 };
 
 })(require("__browserify_process"))
-},{"__browserify_process":9}],7:[function(require,module,exports){
+},{"__browserify_process":8}],7:[function(require,module,exports){
 var events = require('events');
 
 exports.isArray = isArray;
@@ -932,7 +922,7 @@ module.exports = function (uri, cb) {
     return stream;
 };
 
-},{"stream":5,"sockjs-client":10}],10:[function(require,module,exports){
+},{"stream":5,"sockjs-client":9}],9:[function(require,module,exports){
 (function(){/* SockJS client, version 0.3.1.7.ga67f.dirty, http://sockjs.org, MIT License
 
 Copyright (c) 2011-2012 VMware, Inc.
@@ -3258,7 +3248,14 @@ if (typeof module === 'object' && module && module.exports) {
 
 
 })()
-},{}],8:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
+var dnode = require('./lib/dnode');
+
+module.exports = function (cons, opts) {
+    return new dnode(cons, opts);
+};
+
+},{"./lib/dnode":10}],10:[function(require,module,exports){
 (function(process){var protocol = require('dnode-protocol');
 var Stream = require('stream');
 var json = typeof JSON === 'object' ? JSON : require('jsonify');
@@ -3414,11 +3411,7 @@ dnode.prototype.destroy = function () {
 };
 
 })(require("__browserify_process"))
-<<<<<<< HEAD
-},{"stream":5,"dnode-protocol":11,"jsonify":12,"__browserify_process":9}],11:[function(require,module,exports){
-=======
 },{"stream":5,"dnode-protocol":11,"jsonify":12,"__browserify_process":8}],11:[function(require,module,exports){
->>>>>>> Conversas rolando, agora é partir pra fazer
 var EventEmitter = require('events').EventEmitter;
 var scrubber = require('./lib/scrub');
 var objectKeys = require('./lib/keys');
