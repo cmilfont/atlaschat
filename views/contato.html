@@ -7,12 +7,36 @@
 
   <body>
     
-    <h1>Cliente</h1>
+    <div id="entrada">
+	    <div id="login">
+	      <label for="organizacao_id">Organização</label>
+	      <select id="organizacao_id">
+	        <option value="1">Fortes</option>
+	        <option value="2">Guanabara</option>
+	      </select>
+	      <br/>
+	      <label for="nome">Nome</label>
+				<input id='nome' type='text'/> 
+
+	      <br/>
+	      <label for="pergunta">Pergunta</label>
+				<input id='pergunta' type='text'/> 
+				
+	      <input type="button" id="butao_login" value="Enviar" />
+	    </div>
+    </div>
+
+    <div id="atendimento" style="display:none;">
+	    <h1>Cliente</h1>
     
-    <div id="chat"></div>
-    <textarea id="conversa"></textarea>
-    <input type="button" id="butao" value="Enviar" />
-  
+	    <div id="chat"></div>
+			
+			<div id="irc" style="display:none;">
+		    <textarea id="conversa"></textarea>
+		    <input type="button" id="butao" value="Enviar" />
+			</div>
+  	</div>
+	
   <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
   <script src="contato.js"></script>
   </body>

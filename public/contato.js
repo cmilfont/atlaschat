@@ -1,50 +1,60 @@
-;(function(e,t,n){function r(n,i){if(!t[n]){if(!e[n]){var s=typeof require=="function"&&require;if(!i&&s)return s(n,!0);throw new Error("Cannot find module '"+n+"'")}var o=t[n]={exports:{}};e[n][0](function(t){var i=e[n][1][t];return r(i?i:t)},o,o.exports)}return t[n].exports}for(var i=0;i<n.length;i++)r(n[i]);return r})({1:[function(require,module,exports){
+;(function(e,t,n){function i(n,s){if(!t[n]){if(!e[n]){var o=typeof require=="function"&&require;if(!s&&o)return o(n,!0);if(r)return r(n,!0);throw new Error("Cannot find module '"+n+"'")}var u=t[n]={exports:{}};e[n][0].call(u.exports,function(t){var r=e[n][1][t];return i(r?r:t)},u,u.exports)}return t[n].exports}var r=typeof require=="function"&&require;for(var s=0;s<n.length;s++)i(n[s]);return i})({1:[function(require,module,exports){
 var domready = require('domready');
 var shoe = require('shoe');
 var dnode = require('dnode');
 var servidor;
 
 domready(function () {
-    var tramite_id = 25;
-
+	
+	function conectar(contato, callback){
     var stream = shoe('/dnode');
-    var d = dnode({});
+    var d = dnode({});	
     d.on('remote', function (remote) {
       servidor = remote;
-      
-      servidor.entrarNaFila({
+			
+			servidor.entrarNaFila(contato, callback);
+    });
+    d.pipe(stream).pipe(d); 
+		
+	}
+	
+	$("#butao_login").on('click', function(){
+
+		$("#entrada").hide();
+		$("#atendimento").show();
+		
+		conectar({
         id: Math.floor(Math.random() * 1000 ) + 1,
-        tramite_id: tramite_id,
-        organizacao_id: 1,
+        organizacao_id: $("#organizacao_id").val(),
         tramite: {
           contato: {
-            nome: "Zé com acento"
+            nome: $("#nome").val()
           }
         },
         iniciarAtendimento: function(chat_id) {
           console.log("Fui atendido no chat", chat_id);
+					$("#chat").hide();
+					$("#irc").show();
         },
-        receber: function(mensagem) {
-          $("#chat").append("<br/>").append(mensagem);
-        },
+        // receber: function(mensagem) {
+          // $("#chat").append("<br/>").append(mensagem);
+//         },
         created_at: new Date
       }, function(msg) {
-        $("#chat").prepend( $("div").html(msg) )
+				$("#chat").prepend(msg);
       })
-      
     });
-    
-    $("#butao").on('click', function(){
-      servidor.conversar({
-        tipo: "Contato",
-        tramite_id: 100,
-        user_id: 156,
-        msg: $("#conversa").val()
-      })
-      
-    });
-    
-    d.pipe(stream).pipe(d);
+
+      // 
+    // $("#butao").on('click', function(){
+    //   servidor.conversar({
+    //     tipo: "Contato",
+    //     tramite_id: 100,
+    //     user_id: 156,
+    //     msg: $("#conversa").val()
+    //   })
+    //   
+    // });
 });
 },{"domready":2,"shoe":3,"dnode":4}],2:[function(require,module,exports){
 /*!
@@ -222,7 +232,14 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":6,"util":7}],8:[function(require,module,exports){
+},{"events":6,"util":7}],4:[function(require,module,exports){
+var dnode = require('./lib/dnode');
+
+module.exports = function (cons, opts) {
+    return new dnode(cons, opts);
+};
+
+},{"./lib/dnode":8}],9:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -462,7 +479,7 @@ EventEmitter.prototype.listeners = function(type) {
 };
 
 })(require("__browserify_process"))
-},{"__browserify_process":8}],7:[function(require,module,exports){
+},{"__browserify_process":9}],7:[function(require,module,exports){
 var events = require('events');
 
 exports.isArray = isArray;
@@ -886,7 +903,7 @@ module.exports = function (uri, cb) {
     return stream;
 };
 
-},{"stream":5,"sockjs-client":9}],9:[function(require,module,exports){
+},{"stream":5,"sockjs-client":10}],10:[function(require,module,exports){
 (function(){/* SockJS client, version 0.3.1.7.ga67f.dirty, http://sockjs.org, MIT License
 
 Copyright (c) 2011-2012 VMware, Inc.
@@ -3212,14 +3229,7 @@ if (typeof module === 'object' && module && module.exports) {
 
 
 })()
-},{}],4:[function(require,module,exports){
-var dnode = require('./lib/dnode');
-
-module.exports = function (cons, opts) {
-    return new dnode(cons, opts);
-};
-
-},{"./lib/dnode":10}],10:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 (function(process){var protocol = require('dnode-protocol');
 var Stream = require('stream');
 var json = typeof JSON === 'object' ? JSON : require('jsonify');
@@ -3375,7 +3385,7 @@ dnode.prototype.destroy = function () {
 };
 
 })(require("__browserify_process"))
-},{"stream":5,"dnode-protocol":11,"jsonify":12,"__browserify_process":8}],11:[function(require,module,exports){
+},{"stream":5,"dnode-protocol":11,"jsonify":12,"__browserify_process":9}],11:[function(require,module,exports){
 var EventEmitter = require('events').EventEmitter;
 var scrubber = require('./lib/scrub');
 var objectKeys = require('./lib/keys');
