@@ -6,25 +6,23 @@ var servidor;
 
 domready(function () {
     var tramite_id = 25;
-    var result = document.getElementById('chat');
+
     var stream = shoe('/dnode');
-    var d = dnode({
-      tipo: "Contato",
-      tramite_id: tramite_id + 1,
-      receber: function(mensagem) {
-        $("#chat").append("<br/>").append(mensagem);
-      }
-    });
+    var d = dnode({});
     d.on('remote', function (remote) {
       servidor = remote;
       
       servidor.entrarNaFila({
         id: Math.floor(Math.random() * 10 ),
         tramite_id: tramite_id,
+        organizacao_id: 1,
         tramite: {
           contato: {
             nome: "Zé com acento"
           }
+        },
+        receber: function(mensagem) {
+          $("#chat").append("<br/>").append(mensagem);
         },
         created_at: new Date
       }, function(msg) {
@@ -45,7 +43,7 @@ domready(function () {
     
     d.pipe(stream).pipe(d);
 });
-},{"shoe":2,"dnode":3,"domready":4}],4:[function(require,module,exports){
+},{"domready":2,"dnode":3,"shoe":4}],2:[function(require,module,exports){
 /*!
   * domready (c) Dustin Diaz 2012 - License MIT
   */
@@ -221,14 +219,7 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":6,"util":7}],3:[function(require,module,exports){
-var dnode = require('./lib/dnode');
-
-module.exports = function (cons, opts) {
-    return new dnode(cons, opts);
-};
-
-},{"./lib/dnode":8}],9:[function(require,module,exports){
+},{"events":6,"util":7}],8:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -468,7 +459,7 @@ EventEmitter.prototype.listeners = function(type) {
 };
 
 })(require("__browserify_process"))
-},{"__browserify_process":9}],7:[function(require,module,exports){
+},{"__browserify_process":8}],7:[function(require,module,exports){
 var events = require('events');
 
 exports.isArray = isArray;
@@ -821,7 +812,7 @@ exports.format = function(f) {
   return str;
 };
 
-},{"events":6}],2:[function(require,module,exports){
+},{"events":6}],4:[function(require,module,exports){
 var Stream = require('stream');
 var sockjs = require('sockjs-client');
 
@@ -892,7 +883,7 @@ module.exports = function (uri, cb) {
     return stream;
 };
 
-},{"stream":5,"sockjs-client":10}],10:[function(require,module,exports){
+},{"stream":5,"sockjs-client":9}],9:[function(require,module,exports){
 (function(){/* SockJS client, version 0.3.1.7.ga67f.dirty, http://sockjs.org, MIT License
 
 Copyright (c) 2011-2012 VMware, Inc.
@@ -3218,7 +3209,14 @@ if (typeof module === 'object' && module && module.exports) {
 
 
 })()
-},{}],8:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
+var dnode = require('./lib/dnode');
+
+module.exports = function (cons, opts) {
+    return new dnode(cons, opts);
+};
+
+},{"./lib/dnode":10}],10:[function(require,module,exports){
 (function(process){var protocol = require('dnode-protocol');
 var Stream = require('stream');
 var json = typeof JSON === 'object' ? JSON : require('jsonify');
@@ -3374,7 +3372,7 @@ dnode.prototype.destroy = function () {
 };
 
 })(require("__browserify_process"))
-},{"stream":5,"dnode-protocol":11,"jsonify":12,"__browserify_process":9}],11:[function(require,module,exports){
+},{"stream":5,"dnode-protocol":11,"jsonify":12,"__browserify_process":8}],11:[function(require,module,exports){
 var EventEmitter = require('events').EventEmitter;
 var scrubber = require('./lib/scrub');
 var objectKeys = require('./lib/keys');
@@ -4039,7 +4037,7 @@ Scrubber.prototype.unscrub = function (msg, f) {
     return args;
 };
 
-},{"./foreach":15,"./keys":14,"traverse":19}],19:[function(require,module,exports){
+},{"./keys":14,"./foreach":15,"traverse":19}],19:[function(require,module,exports){
 var traverse = module.exports = function (obj) {
     return new Traverse(obj);
 };
