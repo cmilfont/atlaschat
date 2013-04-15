@@ -38,7 +38,11 @@ var grupoDeChats = require(__dirname + '/lib/grupoDeChats')();
 
 var sock = shoe(function (stream) {
     var d = dnode( servidor(filaDeEspera, grupoDeAtendentes, grupoDeChats) );    
-    d.on('remote', function (remote) {} );
+    d.on('remote', function (remote) {
+      
+      console.log("Extjs conectou", remote);
+      
+    });
     d.pipe(stream).pipe(d);
 });
 sock.install(app.listen(9999, function() {
