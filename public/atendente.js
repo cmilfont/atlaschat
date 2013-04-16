@@ -1,84 +1,6 @@
 ;(function(e,t,n){function r(n,i){if(!t[n]){if(!e[n]){var s=typeof require=="function"&&require;if(!i&&s)return s(n,!0);throw new Error("Cannot find module '"+n+"'")}var o=t[n]={exports:{}};e[n][0](function(t){var i=e[n][1][t];return r(i?i:t)},o,o.exports)}return t[n].exports}for(var i=0;i<n.length;i++)r(n[i]);return r})({1:[function(require,module,exports){
-var shoe = require('shoe');
-var dnode = require('dnode');
-var servidor;
-var chat;
-
-$(function(){
-  Window.shoe = shoe;
-  Window.dnode = dnode;
-})
-
-  function atender() {
-    
-    var fila_id = $(this).data("id");
-    var organizacao_id = $(this).data("organizacao_id");
-    servidor.atender(organizacao_id, fila_id, atendente.atendente_id, function(c, mensagem) {
-      chat = c;
-      $("#fila").hide();
-      $("#atendimento").show();
-    });
-
-  };
-
-  function addClienteNaFila(fila) {
-
-    var $link = $("<a>");
-    $link.attr("href", "#");
-    $link.attr("data-id", fila.id);
-    $link.attr("data-organizacao_id", fila.organizacao_id);
-    $link.html(fila.tramite.contato.nome);
-    $("#fila").append( $link );
-    $("#fila").append("<br/>");
-    $link.on("click", atender);
-  };
-
-  function conectar() {
-    
-    var atendente = {
-      tipo: "Atendente",
-      organizacao_id: $("#organizacao_id").val(),
-      atendente_id: $("#atendente_id").val(),
-      tramite_id: Math.floor(Math.random() * 10 ) + 1,
-      receber: function(mensagem) {
-        $("#chat_div").append("<br/>").append(mensagem);
-      },
-      atualizar: function(fila) {
-        addClienteNaFila(fila);
-      },
-      removerContatoNaFila: function(fila) {
-        $("a[data-id='"+fila.id+"']").remove()
-      }
-    };
-    
-     var stream = shoe('http://localhost:9999/dnode');
-     var d = dnode({});
-     d.on('remote', function (remote) {
-       servidor = remote;
-       servidor.entrarEmAtendimento(atendente, function() {
-         servidor.mostrarFila(atendente.organizacao_id, function(lista){
-           lista.forEach(function(fila){
-             addClienteNaFila(fila);
-           });
-         });
-       });
-     });
-     d.pipe(stream).pipe(d); 
-  }
-  
-  
-  // $("#butao_login").on('click', function(){
-  //   $("#login").hide();
-  //   conectar();
-  // });
-  // 
-  // $("#butao").on('click', function(){
-  //   servidor.conversar({
-  //     tipo: "Atendente",
-  //     chat: chat,
-  //     msg: $("#conversa").val()
-  //   })
-  // });
+Window.shoe = require('shoe');
+Window.dnode = require('dnode');
 },{"shoe":2,"dnode":3}],4:[function(require,module,exports){
 var events = require('events');
 var util = require('util');
@@ -3353,7 +3275,11 @@ dnode.prototype.destroy = function () {
 };
 
 })(require("__browserify_process"))
-},{"stream":4,"dnode-protocol":10,"jsonify":11,"__browserify_process":7}],10:[function(require,module,exports){
+},{"stream":4,"dnode-protocol":10,"jsonify":11,"__browserify_process":7}],11:[function(require,module,exports){
+exports.parse = require('./lib/parse');
+exports.stringify = require('./lib/stringify');
+
+},{"./lib/parse":12,"./lib/stringify":13}],10:[function(require,module,exports){
 var EventEmitter = require('events').EventEmitter;
 var scrubber = require('./lib/scrub');
 var objectKeys = require('./lib/keys');
@@ -3480,26 +3406,7 @@ Proto.prototype.apply = function (f, args) {
     catch (err) { this.emit('error', err) }
 };
 
-},{"events":5,"./lib/scrub":12,"./lib/keys":13,"./lib/foreach":14,"./lib/is_enum":15}],11:[function(require,module,exports){
-exports.parse = require('./lib/parse');
-exports.stringify = require('./lib/stringify');
-
-},{"./lib/parse":16,"./lib/stringify":17}],13:[function(require,module,exports){
-module.exports = Object.keys || function (obj) {
-    var keys = [];
-    for (var key in obj) keys.push(key);
-    return keys;
-};
-
-},{}],14:[function(require,module,exports){
-module.exports = function forEach (xs, f) {
-    if (xs.forEach) return xs.forEach(f)
-    for (var i = 0; i < xs.length; i++) {
-        f.call(xs, xs[i], i);
-    }
-}
-
-},{}],16:[function(require,module,exports){
+},{"events":5,"./lib/scrub":14,"./lib/keys":15,"./lib/foreach":16,"./lib/is_enum":17}],12:[function(require,module,exports){
 var at, // The index of the current character
     ch, // The current character
     escapee = {
@@ -3774,7 +3681,7 @@ module.exports = function (source, reviver) {
     }({'': result}, '')) : result;
 };
 
-},{}],17:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 var cx = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
     escapable = /[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
     gap,
@@ -3931,6 +3838,21 @@ module.exports = function (value, replacer, space) {
 };
 
 },{}],15:[function(require,module,exports){
+module.exports = Object.keys || function (obj) {
+    var keys = [];
+    for (var key in obj) keys.push(key);
+    return keys;
+};
+
+},{}],16:[function(require,module,exports){
+module.exports = function forEach (xs, f) {
+    if (xs.forEach) return xs.forEach(f)
+    for (var i = 0; i < xs.length; i++) {
+        f.call(xs, xs[i], i);
+    }
+}
+
+},{}],17:[function(require,module,exports){
 var objectKeys = require('./keys');
 
 module.exports = function (obj, key) {
@@ -3944,7 +3866,7 @@ module.exports = function (obj, key) {
     return false;
 };
 
-},{"./keys":13}],12:[function(require,module,exports){
+},{"./keys":15}],14:[function(require,module,exports){
 var traverse = require('traverse');
 var objectKeys = require('./keys');
 var forEach = require('./foreach');
@@ -4018,7 +3940,7 @@ Scrubber.prototype.unscrub = function (msg, f) {
     return args;
 };
 
-},{"./keys":13,"./foreach":14,"traverse":18}],18:[function(require,module,exports){
+},{"./keys":15,"./foreach":16,"traverse":18}],18:[function(require,module,exports){
 var traverse = module.exports = function (obj) {
     return new Traverse(obj);
 };
