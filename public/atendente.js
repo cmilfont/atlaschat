@@ -1,4 +1,4 @@
-;(function(e,t,n){function r(n,i){if(!t[n]){if(!e[n]){var s=typeof require=="function"&&require;if(!i&&s)return s(n,!0);throw new Error("Cannot find module '"+n+"'")}var o=t[n]={exports:{}};e[n][0](function(t){var i=e[n][1][t];return r(i?i:t)},o,o.exports)}return t[n].exports}for(var i=0;i<n.length;i++)r(n[i]);return r})({1:[function(require,module,exports){
+;(function(e,t,n){function i(n,s){if(!t[n]){if(!e[n]){var o=typeof require=="function"&&require;if(!s&&o)return o(n,!0);if(r)return r(n,!0);throw new Error("Cannot find module '"+n+"'")}var u=t[n]={exports:{}};e[n][0].call(u.exports,function(t){var r=e[n][1][t];return i(r?r:t)},u,u.exports)}return t[n].exports}var r=typeof require=="function"&&require;for(var s=0;s<n.length;s++)i(n[s]);return i})({1:[function(require,module,exports){
 Window.shoe = require('shoe');
 Window.dnode = require('dnode');
 },{"shoe":2,"dnode":3}],4:[function(require,module,exports){
@@ -122,7 +122,14 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":5,"util":6}],7:[function(require,module,exports){
+},{"events":5,"util":6}],3:[function(require,module,exports){
+var dnode = require('./lib/dnode');
+
+module.exports = function (cons, opts) {
+    return new dnode(cons, opts);
+};
+
+},{"./lib/dnode":7}],8:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -362,7 +369,7 @@ EventEmitter.prototype.listeners = function(type) {
 };
 
 })(require("__browserify_process"))
-},{"__browserify_process":7}],6:[function(require,module,exports){
+},{"__browserify_process":8}],6:[function(require,module,exports){
 var events = require('events');
 
 exports.isArray = isArray;
@@ -786,7 +793,7 @@ module.exports = function (uri, cb) {
     return stream;
 };
 
-},{"stream":4,"sockjs-client":8}],8:[function(require,module,exports){
+},{"stream":4,"sockjs-client":9}],9:[function(require,module,exports){
 (function(){/* SockJS client, version 0.3.1.7.ga67f.dirty, http://sockjs.org, MIT License
 
 Copyright (c) 2011-2012 VMware, Inc.
@@ -3112,14 +3119,7 @@ if (typeof module === 'object' && module && module.exports) {
 
 
 })()
-},{}],3:[function(require,module,exports){
-var dnode = require('./lib/dnode');
-
-module.exports = function (cons, opts) {
-    return new dnode(cons, opts);
-};
-
-},{"./lib/dnode":9}],9:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 (function(process){var protocol = require('dnode-protocol');
 var Stream = require('stream');
 var json = typeof JSON === 'object' ? JSON : require('jsonify');
@@ -3275,11 +3275,7 @@ dnode.prototype.destroy = function () {
 };
 
 })(require("__browserify_process"))
-},{"stream":4,"dnode-protocol":10,"jsonify":11,"__browserify_process":7}],11:[function(require,module,exports){
-exports.parse = require('./lib/parse');
-exports.stringify = require('./lib/stringify');
-
-},{"./lib/parse":12,"./lib/stringify":13}],10:[function(require,module,exports){
+},{"stream":4,"dnode-protocol":10,"jsonify":11,"__browserify_process":8}],10:[function(require,module,exports){
 var EventEmitter = require('events').EventEmitter;
 var scrubber = require('./lib/scrub');
 var objectKeys = require('./lib/keys');
@@ -3406,7 +3402,26 @@ Proto.prototype.apply = function (f, args) {
     catch (err) { this.emit('error', err) }
 };
 
-},{"events":5,"./lib/scrub":14,"./lib/keys":15,"./lib/foreach":16,"./lib/is_enum":17}],12:[function(require,module,exports){
+},{"events":5,"./lib/scrub":12,"./lib/keys":13,"./lib/foreach":14,"./lib/is_enum":15}],11:[function(require,module,exports){
+exports.parse = require('./lib/parse');
+exports.stringify = require('./lib/stringify');
+
+},{"./lib/parse":16,"./lib/stringify":17}],13:[function(require,module,exports){
+module.exports = Object.keys || function (obj) {
+    var keys = [];
+    for (var key in obj) keys.push(key);
+    return keys;
+};
+
+},{}],14:[function(require,module,exports){
+module.exports = function forEach (xs, f) {
+    if (xs.forEach) return xs.forEach(f)
+    for (var i = 0; i < xs.length; i++) {
+        f.call(xs, xs[i], i);
+    }
+}
+
+},{}],16:[function(require,module,exports){
 var at, // The index of the current character
     ch, // The current character
     escapee = {
@@ -3681,7 +3696,7 @@ module.exports = function (source, reviver) {
     }({'': result}, '')) : result;
 };
 
-},{}],13:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 var cx = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
     escapable = /[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
     gap,
@@ -3838,21 +3853,6 @@ module.exports = function (value, replacer, space) {
 };
 
 },{}],15:[function(require,module,exports){
-module.exports = Object.keys || function (obj) {
-    var keys = [];
-    for (var key in obj) keys.push(key);
-    return keys;
-};
-
-},{}],16:[function(require,module,exports){
-module.exports = function forEach (xs, f) {
-    if (xs.forEach) return xs.forEach(f)
-    for (var i = 0; i < xs.length; i++) {
-        f.call(xs, xs[i], i);
-    }
-}
-
-},{}],17:[function(require,module,exports){
 var objectKeys = require('./keys');
 
 module.exports = function (obj, key) {
@@ -3866,7 +3866,7 @@ module.exports = function (obj, key) {
     return false;
 };
 
-},{"./keys":15}],14:[function(require,module,exports){
+},{"./keys":13}],12:[function(require,module,exports){
 var traverse = require('traverse');
 var objectKeys = require('./keys');
 var forEach = require('./foreach');
@@ -3940,7 +3940,7 @@ Scrubber.prototype.unscrub = function (msg, f) {
     return args;
 };
 
-},{"./keys":15,"./foreach":16,"traverse":18}],18:[function(require,module,exports){
+},{"./keys":13,"./foreach":14,"traverse":18}],18:[function(require,module,exports){
 var traverse = module.exports = function (obj) {
     return new Traverse(obj);
 };
