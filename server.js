@@ -4,6 +4,12 @@ var express = require('express');
 var app = express();
 //var redis = require("redis").createClient();
 
+var resque = require('coffee-resque').connect({
+  host: '127.0.0.1',
+  port: 6379
+});
+
+
 app.configure(function() {
   app.use(express.bodyParser());
   app.use(express.cookieParser());
@@ -37,12 +43,8 @@ var grupoDeAtendentes = require(__dirname + '/lib/grupoDeAtendentes')();
 var grupoDeChats = require(__dirname + '/lib/grupoDeChats')();
 
 var sock = shoe(function (stream) {
-    var d = dnode( servidor(filaDeEspera, grupoDeAtendentes, grupoDeChats) );    
-    d.on('remote', function (remote) {
-      
-      console.log("Extjs conectou", remote);
-      
-    });
+    var d = dnode( servidor(filaDeEspera, grupoDeAtendentes, grupoDeChats, resque) );    
+    d.on('remote', function (remote) {});
     d.pipe(stream).pipe(d);
 });
 sock.install(app.listen(9999, function() {
