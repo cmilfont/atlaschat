@@ -3,10 +3,10 @@ var dnode = require('dnode');
 var express = require('express');
 var app = express();
 
-// var resque = require('coffee-resque').connect({
-//   host: '127.0.0.1',
-//   port: 6379
-// });
+var resque = require('coffee-resque').connect({
+  host: '127.0.0.1',
+  port: 6379
+});
 
 
 app.configure(function() {
@@ -42,7 +42,7 @@ var grupoDeAtendentes = require(__dirname + '/lib/grupoDeAtendentes')();
 var grupoDeChats = require(__dirname + '/lib/grupoDeChats')();
 
 var sock = shoe(function (stream) {
-    var d = dnode( servidor(filaDeEspera, grupoDeAtendentes, grupoDeChats/*, resque*/) );    
+    var d = dnode( servidor(filaDeEspera, grupoDeAtendentes, grupoDeChats, resque) );    
     d.on('remote', function (remote) {});
     d.pipe(stream).pipe(d);
 });
