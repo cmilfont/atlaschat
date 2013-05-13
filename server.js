@@ -8,7 +8,6 @@ var resque = require('coffee-resque').connect({
   port: 6379
 });
 
-
 app.configure(function() {
   app.use(express.bodyParser());
   app.use(express.cookieParser());
@@ -43,9 +42,13 @@ var grupoDeChats = require(__dirname + '/lib/grupoDeChats')();
 
 var sock = shoe(function (stream) {
     var d = dnode( servidor(filaDeEspera, grupoDeAtendentes, grupoDeChats, resque) );    
-    d.on('remote', function (remote) {});
+    d.on('remote', function (remote, conn) {
+      console.log("Atendente entrou", remote);
+    });
+    
     d.pipe(stream).pipe(d);
 });
 sock.install(app.listen(9999, function() {
   console.log("Server configured for: " + (global.process.env.NODE_ENV || 'development') + " environment.");
+  console.log(new Date)
 }), '/dnode');
