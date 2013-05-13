@@ -35,6 +35,11 @@ app.get('/atendente', function(req, res){
   });
 });
 
+app.get('/atendentes', function(req, res){
+  res.send( grupoDeAtendentes.getAtendentes(1) );
+});
+
+
 var servidor = require(__dirname + '/lib/servidor');
 var filaDeEspera = require(__dirname + '/lib/filaDeEspera')();
 var grupoDeAtendentes = require(__dirname + '/lib/grupoDeAtendentes')();
