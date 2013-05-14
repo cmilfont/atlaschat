@@ -48,7 +48,9 @@ var grupoDeChats = require(__dirname + '/lib/grupoDeChats')();
 var sock = shoe(function (stream) {
     var d = dnode( servidor(filaDeEspera, grupoDeAtendentes, grupoDeChats, resque) );    
     d.on('remote', function (remote, conn) {
-      console.log("Atendente entrou", remote);
+      if(remote.atendente) {
+        console.log("Atendente da Organização: (", remote.atendente.organizacao_id, ") com codigo: (", remote.atendente.atendente_id, ") entrou");
+      }
     });
     
     d.pipe(stream).pipe(d);
